@@ -8,7 +8,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'health-app-2022-75164cf9a820.jso
 speech_client = speech.SpeechClient()
 audio_mp3 = 'never-give-up-and-good-luck-will-find-you.mp3'   # file is 6s long
 
-# Step 2. Create speech recongition instance
+# Step 2. Create speech recongition instance (synchronous recognition)
 with open(audio_mp3, 'rb') as f1:
 	byte_data_mp3 = f1.read()
 audio_recongition = speech.RecognitionAudio(content=byte_data_mp3)
@@ -21,9 +21,11 @@ config_mp3 = speech.RecognitionConfig(
 )
 
 # Step 4. Transcribe audio file (MP3)
-respondoutput = speech_client.recognize(
+response = speech_client.recognize(
 	config=config_mp3,
 	audio=audio_recongition
 )
 
-print(respondoutput)
+
+for result in response.results:
+    print(u"Transcript: {}".format(result.alternatives[0].transcript))

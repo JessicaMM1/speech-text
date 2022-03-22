@@ -3,9 +3,10 @@
 import os
 from google.cloud import speech
 import threading, queue
+import time
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'health-app-2022-75164cf9a820.json'
-audio_list = ['never-give-up-and-good-luck-will-find-you.mp3' ]
+audio_list = ['never-give-up-and-good-luck-will-find-you.mp3', 'robin-listen-to-these-riddles-tell-me-if-you-interpret-them-as-i-do.mp3' ]
 
 q = queue.Queue()
 
@@ -40,7 +41,12 @@ def transcription():
     )
 
     for result in response.results:
-        print(u"Transcript: {}".format(threading.current_thread().name, result.alternatives[0].transcript))
+        # print(u"Transcript: {}".format(threading.current_thread().name, result.alternatives[0].transcript))
+        # print(u"Transcript: {}".format(result.alternatives[0].transcript))
+        print(response)
+    # print(u"Transcript: {}".format(response.results.alternatives[0].transcript))
+        q.task_done()   
+
 
 
 def add_files():
@@ -49,10 +55,11 @@ def add_files():
     
         print(f'{threading.current_thread().name} adding {file}')
 
-
+start = time.time()
+threading.Thread(target=transcription, daemon=True).start()
 threading.Thread(target=transcription, daemon=True).start()
 threading.Thread(target=add_files, daemon=True).start()
-
+end = time.time()
 
 q.join()
-print('All work completed')
+print('All work completed ', end-start)
